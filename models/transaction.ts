@@ -19,8 +19,8 @@ export default class Transaction {
     return res;
   }
 
-  static async edit(id: number) {
-    const res = await pool.query('update transactions set completed = 1 where ?? = ?', ['id', id]);
+  static async edit({ id, category, money, description }: any) {
+    const res = await pool.query('update transactions set category_id = ?, money = ?, description = ? where id = ?', [category, money, description, id],);
     return res;
   }
 }

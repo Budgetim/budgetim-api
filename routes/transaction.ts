@@ -11,6 +11,6 @@ const router = Router();
 router.get('/', getTransactions);
 router.post('/add', addTransaction);
 router.get('/delete', deleteTransaction);
-router.get('/edit', editTransaction);
+router.post('/edit', editTransaction);
 
 export default router;

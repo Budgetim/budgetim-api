@@ -34,14 +34,18 @@ export const deleteTransaction = async (req: RequestDeleteTask, res: Response) =
   res.send(data);
 };
 
-export interface RequestCompleteTask extends Request {
+export interface RequestEditTask extends Request {
   query: {
     id: string;
+    category: string;
+    money: string,
+    description: string;
   }
 }
 
-export const editTransaction = async (req: RequestCompleteTask, res: Response) => {
-  const { query } = req;
-  const [data] = await Transaction.edit(+query.id);
-  res.send(data);
+export const editTransaction = async (req: RequestEditTask, res: Response) => {
+  const { body } = req;
+  const { id, category, money, description } = body;
+  await Transaction.edit({ id: +id, category, money, description });
+  res.send(200);
 };
