@@ -1,6 +1,5 @@
 import express from 'express';
 import session from 'express-session';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import router from './routes';
 import { logSession } from './middlewares'
@@ -21,12 +20,7 @@ const sessionMiddleware = session({
 app.use(cors());
 app.use(sessionMiddleware);
 app.use(logSession);
-
-app.use(bodyParser.json())
-
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+app.use(express.json());
 
 app.use('/', router);
 
