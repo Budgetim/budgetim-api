@@ -4,7 +4,7 @@ import {
   deleteTransaction,
   editTransaction,
   getTransactions,
-} from '../controllers/transaction';
+} from '../controllers/transactions';
 
 const router = Router();
 
