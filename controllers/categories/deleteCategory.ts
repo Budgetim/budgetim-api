@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 import Categories from '../../models/categories';
 
 export interface RequestDeleteCategory extends Request {
-  query: {
+  params: {
     id: string;
   }
 }
 
 export const deleteCategory = async (req: RequestDeleteCategory, res: Response) => {
-  const { query } = req;
-  const [data] = await Categories.delete(+query.id);
+  const { params } = req;
+  const [data] = await Categories.delete(+params.id);
   res.send(data);
 };

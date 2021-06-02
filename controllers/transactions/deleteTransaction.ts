@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 import Transaction from '../../models/transaction';
 
 export interface DeleteTransactionRequest extends Request {
-  query: {
+  params: {
     id: string;
   }
 }
 
 export const deleteTransaction = async (req: DeleteTransactionRequest, res: Response) => {
-  const { query } = req;
-  const [data] = await Transaction.delete(+query.id);
+  const { params } = req;
+  const [data] = await Transaction.delete(+params.id);
   res.send(data);
 };
