@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Transaction from '../../models/transaction';
+import Transaction from '../../models/Transaction';
 
 export interface DeleteTransactionRequest extends Request {
   params: {
@@ -8,7 +8,7 @@ export interface DeleteTransactionRequest extends Request {
 }
 
 export const deleteTransaction = async (req: DeleteTransactionRequest, res: Response) => {
-  const { params } = req;
-  const [data] = await Transaction.delete(+params.id);
-  res.send(data);
+  const { body: { id } } = req;
+  await Transaction.findByIdAndDelete(id);
+  res.send(200);
 };

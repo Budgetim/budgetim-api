@@ -10,7 +10,7 @@ const router = Router();
 
 router.get('/', getTransactions);
 router.post('/add', addTransaction);
-router.get('/:id/delete', deleteTransaction);
-router.post('/:id/edit', editTransaction);
+router.post('/delete', deleteTransaction);
+router.post('/edit', editTransaction);
 
 export default router;
