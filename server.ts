@@ -14,6 +14,10 @@ app.use(express.json());
 
 app.use('/', router);
 
+app.get('/', (req, res) => {
+  res.send('OK!!!');
+});
+
 app.get('*', (req, res) => {
   res.send({});
 });
