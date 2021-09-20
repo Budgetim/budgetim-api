@@ -1,1 +1,0 @@
-{"version":3,"file":"getTransactions.js","sourceRoot":"","sources":["../../../controllers/transactions/getTransactions.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;AACA,2EAAmD;AAE5C,MAAM,eAAe,GAAG,CAAO,GAAY,EAAE,GAAa,EAAE,EAAE;IACnE,MAAM,YAAY,GAAG,MAAM,qBAAW,CAAC,IAAI,CAAC,EAAE,CAAC,CAAC;IAChD,GAAG,CAAC,IAAI,CAAC,YAAY,CAAC,CAAC;AACzB,CAAC,CAAA,CAAC;AAHW,QAAA,eAAe,mBAG1B"}
