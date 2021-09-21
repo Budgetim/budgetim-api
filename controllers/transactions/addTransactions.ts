@@ -9,5 +9,5 @@ export const addTransaction = async (req: AddTransactionRequest, res: Response) 
   const { body } = req;
   const transaction = new Transaction(body);
   await transaction.save();
-  res.send(200);
+  res.send(transaction);
 };

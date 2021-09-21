@@ -9,6 +9,6 @@ export interface DeleteTransactionRequest extends Request {
 
 export const deleteTransaction = async (req: DeleteTransactionRequest, res: Response) => {
   const { body: { id } } = req;
-  await Transaction.findByIdAndDelete(id);
-  res.send(200);
+  const deletedTransaction = await Transaction.findByIdAndDelete(id);
+  res.send(deletedTransaction);
 };

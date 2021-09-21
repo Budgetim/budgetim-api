@@ -2,7 +2,6 @@ import { Schema, model } from 'mongoose';
 
 export interface TransactionUnit {
   title: string;
-  description?: string;
   category: string;
   price: number;
 }
@@ -12,7 +11,6 @@ const schema = new Schema<TransactionUnit>({
     type: String,
     required: true,
   },
-  description: String,
   category: {
     type: String,
     required: true,
