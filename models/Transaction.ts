@@ -4,6 +4,7 @@ export interface TransactionUnit {
   title: string;
   category: string;
   price: number;
+  date: Date;
 }
 
 const schema = new Schema<TransactionUnit>({
@@ -17,6 +18,10 @@ const schema = new Schema<TransactionUnit>({
   },
   price: {
     type: Number,
+    required: true,
+  },
+  date: {
+    type: Date,
     required: true,
   },
 });

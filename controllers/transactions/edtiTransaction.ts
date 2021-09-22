@@ -14,6 +14,6 @@ export const editTransaction = async (req: EditTransactionRequest, res: Response
   const { body } = req;
   const { id, ...params } = body;
 
-  const transaction = await Transaction.findByIdAndUpdate(id, params, { upsert: true });
+  const transaction = await Transaction.findByIdAndUpdate(id, params, { upsert: true, returnOriginal: false });
   res.send(transaction);
 };
