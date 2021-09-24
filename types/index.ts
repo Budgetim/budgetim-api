@@ -1,7 +1,7 @@
 export interface TransactionDataBase {
   id: number;
   title: string;
-  category_id: number;
+  category: string;
   user_id: number;
   price: string;
   date: string;

@@ -1,9 +1,13 @@
 import { Request, Response } from 'express';
 import Transaction from '../../models/transaction';
-import { TransactionClient } from '../../types';
 
 interface AddTransactionRequest extends Request {
-  body: TransactionClient;
+  body: {
+    title: string;
+    categoryId: number;
+    price: number;
+    date: string;
+  };
 }
 
 export const addTransaction = async (req: AddTransactionRequest, res: Response) => {

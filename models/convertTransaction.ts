@@ -4,7 +4,7 @@ export const convertTransaction = (transaction: TransactionDataBase): Transactio
   return {
     id: transaction.id,
     title: transaction.title,
-    category: transaction.category_id.toString(),
+    category: transaction.category,
     price: +transaction.price,
     date: transaction.date,
   };
