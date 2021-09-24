@@ -6,5 +6,4 @@ const options = {
   port: +process.env.BUDGETIM_PORT,
 };
 
-console.log('opt', options);
 export { options };
