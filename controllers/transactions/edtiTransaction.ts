@@ -1,19 +1,13 @@
 import { Request, Response } from 'express';
-import Transaction from '../../models/Transaction';
+import Transaction from '../../models/transaction';
+import { TransactionClient } from '../../types';
 
 export interface EditTransactionRequest extends Request {
-  body: {
-    id: string;
-    category?: string;
-    price?: number,
-    description?: string;
-  }
+  body: TransactionClient & { categoryId: number };
 }
 
 export const editTransaction = async (req: EditTransactionRequest, res: Response) => {
   const { body } = req;
-  const { id, ...params } = body;
-
-  const transaction = await Transaction.findByIdAndUpdate(id, params, { upsert: true, returnOriginal: false });
+  const transaction = await Transaction.edit(body);
   res.send(transaction);
 };
