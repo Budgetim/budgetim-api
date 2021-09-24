@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.ts",
-    "start": "tsc && node dist/server.js",
+    "dev": "source ~/.bash_profile && nodemon server.ts",
+    "start": "source ~/.bash_profile && tsc && node dist/server.js",
     "lint": "eslint './{components,icons}/**/*.{.ts,.tsx}'"
   },
   "eslintConfig": {
