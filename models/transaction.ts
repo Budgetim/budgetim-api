@@ -1,22 +1,35 @@
 import { pool } from './db';
 
+const getTransaction = (transaction: any) => {
+  const { categoryId, categoryTitle, categoryColor, ...other } = transaction;
+  return {
+    ...other,
+    category: {
+      id: categoryId,
+      title: categoryTitle,
+      color: categoryColor,
+    }
+  }
+}
+
 export default class Transaction {
   static async get() {
     const transactions: any = await pool.query(`
-      SELECT transaction.id, transaction.title, category.title AS category, transaction.category_id AS categoryId, transaction.price, transaction.date FROM transaction
+      SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date FROM transaction
       INNER JOIN category ON transaction.category_id = category.id
+      ORDER BY transaction.date DESC
     `);
-    return transactions[0];
+    return transactions[0].map(transaction => getTransaction(transaction));
   }
 
   static async getById(id: number) {
     const transaction = await pool.query(`
-    SELECT transaction.id, transaction.title, category.title AS category, transaction.category_id AS categoryId, transaction.price, transaction.date FROM transaction 
+    SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date FROM transaction 
     INNER JOIN category ON transaction.category_id = category.id
     WHERE ?? = ?`,
       ['transaction.id', id]
     );
-    return transaction[0][0];
+    return getTransaction(transaction[0][0]);
   }
 
   static async add({ title, categoryId, price, date }: { title: string; categoryId: number; price: number; date: string }) {

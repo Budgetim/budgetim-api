@@ -4,6 +4,8 @@ import Category from '../../models/category';
 interface AddCategoryRequest extends Request {
   body: {
     title: string;
+    color: string | null;
+    description: string | null;
   };
 }
 

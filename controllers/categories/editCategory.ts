@@ -5,6 +5,8 @@ export interface EditCategoryRequest extends Request {
   body: {
     id: number;
     title: string;
+    color: string | null;
+    description: string | null;
   };
 }
 
