@@ -14,7 +14,7 @@ app.use(express.json());
 app.use('/', router);
 
 app.get('/', (req, res) => {
-  res.send('OK!!!');
+  res.send(200);
 });
 
 app.get('*', (req, res) => {
@@ -24,5 +24,3 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log(`> Ready on http://localhost:${port}`);
 });
-
-export {};

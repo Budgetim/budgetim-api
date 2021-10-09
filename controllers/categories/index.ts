@@ -1,1 +1,6 @@
-export * from './getCategories';
+export {
+  getCategories,
+  addCategory,
+  deleteCategory,
+  editCategory
+} from './categories';
