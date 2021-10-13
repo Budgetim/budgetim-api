@@ -51,7 +51,7 @@ export default class Category {
       AND MONTH(transaction.date) = ?
       AND YEAR(transaction.date) = ?
       GROUP BY category.id, category.color, category.title, category.description
-    `, [13, month, year]);
+    `, [userId, month, year]);
     return result[0];
   }
 }
