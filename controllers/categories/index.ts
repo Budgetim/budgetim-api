@@ -2,5 +2,6 @@ export {
   getCategories,
   addCategory,
   deleteCategory,
-  editCategory
+  editCategory,
+  showStatistic,
 } from './categories';

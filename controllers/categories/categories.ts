@@ -49,3 +49,16 @@ export const deleteCategory = async (req: DeleteCategoryRequest, res: Response) 
   const category = await Category.delete(+id, userId);
   res.send(category);
 };
+
+export interface StatisticCategoryRequest extends RequestWithUser {
+  body: {
+    month: number;
+    year: number;
+  };
+}
+
+export const showStatistic = async (req: StatisticCategoryRequest, res: Response) => {
+  const { body, userId } = req;
+  const result = await Category.showStatistic(body.month, body.year, userId);
+  res.send(result);
+};
