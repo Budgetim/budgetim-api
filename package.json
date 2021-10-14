@@ -8,20 +8,6 @@
     "start": "tsc && node dist/server.js",
     "lint": "eslint --ext .js,.ts routes controllers config middlewares models types server.ts"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint",
-      "git add"
-    ]
-  },
   "author": "Pavlenko Vitaly",
   "license": "ISC",
   "dependencies": {

@@ -60,7 +60,8 @@ export default class Category {
       WHERE transaction.client_id = ?
       AND MONTH(transaction.date) = ?
       AND YEAR(transaction.date) = ?
-      GROUP BY category.id, category.color, category.title, category.description`,
+      GROUP BY category.id, category.color, category.title, category.description
+      ORDER BY sum DESC`,
       [userId, month, year],
     ) as unknown as [CategorySummary[]];
     return result[0];
