@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "source ~/.bash_profile && nodemon server.ts",
     "start": "tsc && node dist/server.js",
-    "eslint": "eslint --ext .js,.ts routes controllers config middlewares models types server.ts"
+    "lint": "eslint --ext .js,.ts routes controllers config middlewares models types server.ts"
   },
   "eslintConfig": {
     "extends": "react-app"

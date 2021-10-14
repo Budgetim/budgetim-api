@@ -1,25 +1,34 @@
 import { pool } from './db';
+import {
+  CategoryInfoForTransaction,
+  Transaction as TransactionType,
+  TransactionWithoutId
+} from '../types';
+import { ResultSetHeader } from 'mysql2';
 
-const getTransaction = (transaction: any) => {
-  const { categoryId, categoryTitle, categoryColor, ...other } = transaction;
+const getTransaction = (transaction: TransactionType & CategoryInfoForTransaction ) => {
+  const { categoryId, categoryTitle, categoryColor, categoryDescription, ...other } = transaction;
   return {
     ...other,
     category: {
       id: categoryId,
       title: categoryTitle,
+      description: categoryDescription,
       color: categoryColor,
     }
   }
 }
 
 export default class Transaction {
-  static async get(userId) {
-    const transactions: any = await pool.query(`
-      SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date FROM transaction
+  static async get(userId: number) {
+    const transactions = await pool.query(`
+      SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date
+      FROM transaction
       INNER JOIN category ON transaction.category_id = category.id
       WHERE ?? = ?
-      ORDER BY transaction.date DESC
-    `, ['transaction.client_id', userId]);
+      ORDER BY transaction.date DESC`,
+      ['transaction.client_id', userId],
+    ) as unknown as [(TransactionType & CategoryInfoForTransaction)[]];
     return transactions[0].map(transaction => getTransaction(transaction));
   }
 
@@ -33,22 +42,32 @@ export default class Transaction {
     return getTransaction(transaction[0][0]);
   }
 
-  static async add({ title, categoryId, price, date, userId }: { title: string; categoryId: number; price: number; date: string, userId: number }) {
-    const res: any = await pool.query(
-      'insert into transaction (title, category_id, price, date, client_id) values (?, ?, ?, ?, ?)',
+  static async add({ title, categoryId, price, date, userId }: TransactionWithoutId & { userId: number }) {
+    const resultList = await pool.query(`
+      INSERT INTO transaction (title, category_id, price, date, client_id)
+      VALUES (?, ?, ?, ?, ?)`,
       [title, categoryId, price, date, userId],
     );
-    const transaction = await this.getById(res[0].insertId);
+    const result = resultList[0] as ResultSetHeader;
+    const transaction = await this.getById(result.insertId);
     return transaction;
   }
 
-  static async delete(id: number, userId) {
-    const res = await pool.query('DELETE FROM transaction WHERE id = ? AND client_id = ?', [id, userId])
+  static async delete(id: number, userId: number) {
+    const res = await pool.query(`
+     DELETE FROM transaction
+     WHERE id = ? AND client_id = ?`,
+      [id, userId],
+    );
     return res;
   }
 
-  static async edit({ id, title, categoryId, price, date, userId }: { id: number; title: string; categoryId: number; price: number; date: string; userId: number }) {
-    await pool.query('UPDATE transaction SET title = ?, category_id = ?, price = ?, date = ? WHERE id = ? AND client_id = ?', [title, categoryId, price, date, id, userId],);
+  static async edit({ id, title, categoryId, price, date, userId }: TransactionType & { userId: number }) {
+    await pool.query(`
+      UPDATE transaction SET title = ?, category_id = ?, price = ?, date = ?
+      WHERE id = ? AND client_id = ?`,
+      [title, categoryId, price, date, id, userId],
+    );
     const transaction = await this.getById(id);
     return transaction;
   }
