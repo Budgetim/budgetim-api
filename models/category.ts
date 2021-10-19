@@ -6,10 +6,12 @@ import { Category as CategoryType, CategorySummary, CategoryWithoutId } from '..
 export default class Category {
   static async get(userId: number) {
     const categories = await pool.query(`
-      SELECT id, title, description, color
+      SELECT category.id, category.title, category.description, category.color,
+      (SELECT COUNT(*) FROM transaction WHERE transaction.category_id = category.id) AS total
       FROM category
-      WHERE ?? = ?`,
-      ['client_id', userId]
+      WHERE ?? = ?
+      ORDER BY total DESC`,
+      ['category.client_id', userId]
     ) as unknown as [CategoryType[]];
     return categories[0];
   }
@@ -56,7 +58,7 @@ export default class Category {
   static async showStatistic(month: number, year: number, userId: number) {
     const result = await pool.query(`
       SELECT SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
-      INNER JOIN category ON transaction.category_id = category.id
+      LEFT JOIN category ON transaction.category_id = category.id
       WHERE transaction.client_id = ?
       AND MONTH(transaction.date) = ?
       AND YEAR(transaction.date) = ?

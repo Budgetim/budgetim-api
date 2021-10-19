@@ -35,7 +35,7 @@ export default class User {
     const user = res[0][0];
 
     const access = await bcrypt.compare(password, user.password);
-    const token = jwt.sign({ sub: user.id }, secret, { expiresIn: '7d' });
+    const token = jwt.sign({ sub: user.id }, secret, { expiresIn: '30d' });
 
     if (access) {
       return { ...this.omitPassword(user), token };

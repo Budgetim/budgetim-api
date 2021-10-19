@@ -24,7 +24,7 @@ export default class Transaction {
     const transactions = await pool.query(`
       SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date
       FROM transaction
-      INNER JOIN category ON transaction.category_id = category.id
+      LEFT JOIN category ON transaction.category_id = category.id
       WHERE ?? = ?
       ORDER BY transaction.date DESC`,
       ['transaction.client_id', userId],
@@ -35,7 +35,7 @@ export default class Transaction {
   static async getById(id: number) {
     const transaction = await pool.query(`
     SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date FROM transaction 
-    INNER JOIN category ON transaction.category_id = category.id
+    LEFT JOIN category ON transaction.category_id = category.id
     WHERE ?? = ?`,
       ['transaction.id', id]
     );
