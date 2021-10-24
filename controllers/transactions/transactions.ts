@@ -1,12 +1,11 @@
 import { Response } from 'express';
 
 import Transaction from '../../models/transaction';
-import { RequestWithUser } from '../../types';
-import { AddTransactionRequest, DeleteTransactionRequest, EditTransactionRequest } from './types';
+import { AddTransactionRequest, DeleteTransactionRequest, EditTransactionRequest, GetTransactionRequest } from './types';
 
-export const getTransactions = async (req: RequestWithUser, res: Response) => {
-  const { userId } = req;
-  const transactions = await Transaction.get(userId);
+export const getTransactions = async (req: GetTransactionRequest, res: Response) => {
+  const { userId, query: { month, year, category } } = req;
+  const transactions = await Transaction.get({ userId, month, year, category });
   res.send(transactions);
 };
 
