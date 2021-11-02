@@ -3,4 +3,5 @@ export {
   editTransaction,
   deleteTransaction,
   addTransaction,
+  getAvailableMonths,
 } from './transactions';

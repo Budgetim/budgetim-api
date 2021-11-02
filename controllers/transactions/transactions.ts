@@ -2,6 +2,7 @@ import { Response } from 'express';
 
 import Transaction from '../../models/transaction';
 import { AddTransactionRequest, DeleteTransactionRequest, EditTransactionRequest, GetTransactionRequest } from './types';
+import { RequestWithUser } from '../../types';
 
 export const getTransactions = async (req: GetTransactionRequest, res: Response) => {
   const { userId, query: { month, year, category } } = req;
@@ -27,4 +28,10 @@ export const editTransaction = async (req: EditTransactionRequest, res: Response
   const { body, userId } = req;
   const transaction = await Transaction.edit({ ...body, userId });
   res.send(transaction);
+};
+
+export const getAvailableMonths = async (req: RequestWithUser, res: Response) => {
+  const { userId } = req;
+  const result = await Transaction.getAvailableMonths(userId);
+  res.send(result);
 };

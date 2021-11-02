@@ -1,6 +1,6 @@
 import { pool } from './db';
 import {
-  CategoryInfoForTransaction,
+  CategoryInfoForTransaction, CategorySummary,
   Transaction as TransactionType,
   TransactionWithoutId
 } from '../types';
@@ -88,5 +88,38 @@ export default class Transaction {
     );
     const transaction = await this.getById(id);
     return transaction;
+  }
+
+  static async getAvailableMonths(userId: number) {
+    const result = await pool.query(`
+      SELECT MIN(transaction.date) as min, MAX(transaction.date) as max
+      FROM transaction
+      WHERE transaction.client_id = ?`,
+      [userId],
+    ) as unknown as [CategorySummary[]];
+
+    const listMonths = this.getListMonths(result[0][0] as any);
+    return listMonths;
+  }
+
+  static getListMonths({ min, max }: { min: string, max: string }) {
+    const startDate = min;
+    const endDate = max;
+
+    const start = startDate.split('-');
+    const end = endDate.split('-');
+    const startYear = parseInt(start[0]);
+    const endYear = parseInt(end[0]);
+    const dates = [];
+
+    for(let year = startYear; year <= endYear; year++) {
+      const endMonth = year != endYear ? 11 : parseInt(end[1]) - 1;
+      const startMon = year === startYear ? parseInt(start[1]) -1 : 0;
+      for(let j = startMon; j <= endMonth; j = j > 12 ? j % 12 || 11 : j + 1) {
+        const month = j + 1;
+        dates.push({ year, month });
+      }
+    }
+    return { data: dates };
   }
 }
