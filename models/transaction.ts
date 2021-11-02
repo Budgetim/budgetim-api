@@ -20,7 +20,21 @@ const getTransaction = (transaction: TransactionType & CategoryInfoForTransactio
 }
 
 export default class Transaction {
-  static async get({ userId, month, year, category }: { userId: number; month: string; year: string; category?: string; }) {
+  static async get({ category, userId }: { userId: number; category?: string; }) {
+    const categoryTemplateQuery = category ? `AND transaction.category_id = ?` : '';
+    const transactions = await pool.query(`
+      SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date
+      FROM transaction
+      LEFT JOIN category ON transaction.category_id = category.id
+      WHERE transaction.client_id = ?
+      ${categoryTemplateQuery}
+      ORDER BY transaction.date DESC`,
+      [userId, category],
+    ) as unknown as [(TransactionType & CategoryInfoForTransaction)[]];
+    return transactions[0].map(transaction => getTransaction(transaction));
+  }
+
+  static async getByDate({ category, month, year, userId }: { userId: number; month: string; year: string; category?: string; }) {
     const categoryTemplateQuery = category ? `AND transaction.category_id = ?` : '';
     const transactions = await pool.query(`
       SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date

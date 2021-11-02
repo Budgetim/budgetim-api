@@ -5,7 +5,9 @@ import { AddTransactionRequest, DeleteTransactionRequest, EditTransactionRequest
 
 export const getTransactions = async (req: GetTransactionRequest, res: Response) => {
   const { userId, query: { month, year, category } } = req;
-  const transactions = await Transaction.get({ userId, month, year, category });
+  const transactions = month && year
+    ? await Transaction.getByDate({ userId, month, year, category })
+    : await Transaction.get({ userId, category });
   res.send(transactions);
 };
 
