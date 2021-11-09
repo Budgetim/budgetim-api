@@ -12,3 +12,10 @@ export interface AuthenticateRequest extends Request {
     password: User['password'];
   };
 }
+
+export interface VerifyRequest extends Request {
+  params: {
+    id: string;
+    token: string;
+  };
+}
