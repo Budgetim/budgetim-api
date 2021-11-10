@@ -19,3 +19,9 @@ export interface VerifyRequest extends Request {
     token: string;
   };
 }
+
+export interface ResetPasswordRequest extends Request {
+  body: {
+    email: User['email'];
+  };
+}

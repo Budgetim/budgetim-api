@@ -2,7 +2,7 @@ import { Response } from 'express';
 
 import User from '../../models/user';
 
-import { AuthenticateRequest, RegisterRequest, VerifyRequest } from './types';
+import { AuthenticateRequest, RegisterRequest, ResetPasswordRequest, VerifyRequest } from './types';
 import jwt from 'jsonwebtoken';
 import secret from '../../config/secret';
 import { sendEmail } from '../../models/emailTransporter';
@@ -30,10 +30,7 @@ export const registerUser = async (req: RegisterRequest, res: Response) => {
   Welcome to BUDGETIM! To verify your email, click the following link:
   <br />
   <br />
-  https://api.budgetim.ru/users/verify/${user.id}/${token}
-  <br />
-  <br />
-  BUDGETIM TEAM`;
+  https://api.budgetim.ru/users/verify/${user.id}/${token}`;
   await sendEmail(user.email, 'Verify your email address', html);
 
   res.send(User.omitPassword(user));
@@ -81,3 +78,27 @@ export const authenticateUser = async (req: AuthenticateRequest, res: Response) 
   res.send({ ...User.omitPassword(foundedUser), token });
 };
 
+export const resetPassword = async (req: ResetPasswordRequest, res: Response) => {
+  const { body } = req;
+
+  const user = await User.findByEmail({ email: body.email });
+
+  if (!user) {
+    return res.status(400).send('User with this email was not found');
+  }
+
+  const password = Math.random().toString(36).slice(-8);
+
+  const html = `
+  Your password has been reset
+  <br />
+  <br />
+  Your new password: <b>${password}</b>
+  <br />
+  <br />
+  You can change it in BUDGETIM App`;
+  await sendEmail(user.email, 'Reset password', html);
+  await User.updatePassword({ id: user.id, password });
+
+  res.send(User.omitPassword(user));
+};

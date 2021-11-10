@@ -18,6 +18,18 @@ export default class User {
     return user;
   }
 
+  static async updatePassword({ id, password }: { id: number; password: string }) {
+    const hash = await bcrypt.hash(password, 10);
+
+    const res = await pool.query(`
+      UPDATE client SET password = ?
+      WHERE id = ?`,
+      [hash, id],
+    );
+
+    return res;
+  }
+
   static async findByEmail({ email }: { email: string }) {
     const result = await pool.query(`
       SELECT * FROM client
