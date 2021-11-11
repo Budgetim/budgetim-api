@@ -39,6 +39,19 @@ export interface User {
   name: string | null;
   email: string;
   password: string;
+  currency: Currency;
 }
 
 export type UserWithoutId = Omit<User, 'id'>
+
+export interface Currency {
+  id: number;
+  title: string;
+  unit: string;
+}
+
+export interface CurrencyInfoForUser {
+  currencyId: number;
+  currencyTitle: string;
+  currencyUnit: string;
+}

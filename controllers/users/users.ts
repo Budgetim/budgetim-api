@@ -2,11 +2,18 @@ import { Response } from 'express';
 
 import User from '../../models/user';
 
-import { AuthenticateRequest, RegisterRequest, ResetPasswordRequest, VerifyRequest } from './types';
+import {
+  AuthenticateRequest,
+  RegisterRequest,
+  ResetPasswordRequest,
+  UpdateCurrencyRequest,
+  VerifyRequest
+} from './types';
 import jwt from 'jsonwebtoken';
 import secret from '../../config/secret';
 import { sendEmail } from '../../models/emailTransporter';
 import bcrypt from 'bcrypt';
+import { RequestWithUser } from '../../types';
 
 export const registerUser = async (req: RegisterRequest, res: Response) => {
   const { body } = req;
@@ -98,7 +105,19 @@ export const resetPassword = async (req: ResetPasswordRequest, res: Response) =>
   <br />
   You can change it in BUDGETIM App`;
   await sendEmail(user.email, 'Reset password', html);
-  await User.updatePassword({ id: user.id, password });
+  const updatedUser = await User.updatePassword({ id: user.id, password });
 
-  res.send(User.omitPassword(user));
+  res.send(User.omitPassword(updatedUser));
 };
+
+export const getUser = async (req: RequestWithUser, res: Response) => {
+  const { userId } = req;
+  const user = await User.findById({ id: userId })
+  res.send(User.omitPassword(user));
+}
+
+export const updateCurrency = async (req: UpdateCurrencyRequest, res: Response) => {
+  const { body: { currencyId }, userId } = req;
+  const user = await User.updateCurrency({ id: userId, currencyId });
+  res.send(User.omitPassword(user));
+}

@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-import { User, UserWithoutId } from '../../types';
+import { RequestWithUser, User, UserWithoutId } from '../../types';
 
 export interface RegisterRequest extends Request {
   body: UserWithoutId;
@@ -23,5 +23,11 @@ export interface VerifyRequest extends Request {
 export interface ResetPasswordRequest extends Request {
   body: {
     email: User['email'];
+  };
+}
+
+export interface UpdateCurrencyRequest extends RequestWithUser {
+  body: {
+    currencyId: number;
   };
 }
