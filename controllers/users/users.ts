@@ -6,7 +6,7 @@ import {
   AuthenticateRequest,
   RegisterRequest,
   ResetPasswordRequest,
-  UpdateCurrencyRequest,
+  UpdateCurrencyRequest, UpdatePasswordRequest,
   VerifyRequest
 } from './types';
 import jwt from 'jsonwebtoken';
@@ -119,5 +119,11 @@ export const getUser = async (req: RequestWithUser, res: Response) => {
 export const updateCurrency = async (req: UpdateCurrencyRequest, res: Response) => {
   const { body: { currencyId }, userId } = req;
   const user = await User.updateCurrency({ id: userId, currencyId });
+  res.send(User.omitPassword(user));
+}
+
+export const updatePassword = async (req: UpdatePasswordRequest, res: Response) => {
+  const { body: { password }, userId } = req;
+  const user = await User.updatePassword({ id: userId, password });
   res.send(User.omitPassword(user));
 }

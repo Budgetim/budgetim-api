@@ -31,3 +31,9 @@ export interface UpdateCurrencyRequest extends RequestWithUser {
     currencyId: number;
   };
 }
+
+export interface UpdatePasswordRequest extends RequestWithUser {
+  body: {
+    password: string;
+  };
+}

@@ -6,6 +6,7 @@ import {
   resetPassword,
   updateCurrency,
   getUser,
+  updatePassword,
 } from '../controllers/users/users';
 import { authenticateToken } from '../middlewares/authenticateToken';
 
@@ -18,5 +19,6 @@ router.post('/resetPassword', resetPassword);
 
 router.get('/', authenticateToken, getUser);
 router.post('/updateCurrency', authenticateToken, updateCurrency);
+router.post('/updatePassword', authenticateToken, updatePassword);
 
 export default router;

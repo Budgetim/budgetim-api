@@ -86,6 +86,7 @@ export default class User {
     return restUser;
   }
 
+
   static async setVerified({ id }: { id: number }) {
     const res = await pool.query(`
       UPDATE client SET verified = 1
