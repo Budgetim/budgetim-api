@@ -98,7 +98,11 @@ export default class Transaction {
       [userId],
     ) as unknown as [CategorySummary[]];
 
-    const listMonths = this.getListMonths(result[0][0] as any);
+    const range = result[0][0] as unknown as { min: string; max: string } | { min: null; max: null };
+    if (!range.min && !range.max) {
+      return [];
+    }
+    const listMonths = this.getListMonths(range);
     return listMonths;
   }
 
