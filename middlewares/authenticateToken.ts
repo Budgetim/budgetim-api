@@ -12,6 +12,7 @@ export const authenticateToken = (req: RequestWithUser, res: Response, next: Nex
     return res.sendStatus(401);
   }
 
+  // TODO: сделать также
   jwt.verify(token, secret, (err, user) => {
     if (err) {
       return res.sendStatus(403);

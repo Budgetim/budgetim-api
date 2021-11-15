@@ -28,7 +28,7 @@ export const registerUser = async (req: RegisterRequest, res: Response) => {
   const token = jwt.sign(
     { sub: user.id },
     secret,
-    { expiresIn: '30d' }
+    { expiresIn: '365 days' }
   );
   const html = `
   Hi ${user.name || user.email}!
@@ -76,7 +76,7 @@ export const authenticateUser = async (req: AuthenticateRequest, res: Response) 
   }
 
   const access = await bcrypt.compare(body.password, foundedUser.password);
-  const token = jwt.sign({ sub: foundedUser.id }, secret, { expiresIn: '30d' });
+  const token = jwt.sign({ sub: foundedUser.id }, secret, { expiresIn: '365ms' });
 
   if (!access) {
     return res.status(400).send('Wrong username or password');
