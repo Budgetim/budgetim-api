@@ -100,7 +100,9 @@ export default class Transaction {
 
     const range = result[0][0] as unknown as { min: string; max: string } | { min: null; max: null };
     if (!range.min && !range.max) {
-      return [];
+      return {
+        data: [],
+      };
     }
     const listMonths = this.getListMonths(range);
     return listMonths;
