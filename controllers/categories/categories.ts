@@ -17,13 +17,19 @@ export const addCategory = async (req: AddCategoryRequest, res: Response) => {
 };
 
 export const editCategory = async (req: EditCategoryRequest, res: Response) => {
-  const { body, userId } = req;
-  const category = await Category.edit({ ...body, userId });
+  const { body, userId, params: { id } } = req;
+  const category = await Category.edit({
+    ...{
+      id: +id,
+      ...body,
+    },
+    userId
+  });
   res.send(category);
 };
 
 export const deleteCategory = async (req: DeleteCategoryRequest, res: Response) => {
-  const { body: { id }, userId } = req;
+  const { params: { id }, userId } = req;
   const category = await Category.delete(+id, userId);
   res.send(category);
 };

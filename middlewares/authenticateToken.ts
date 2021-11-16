@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Response, NextFunction } from 'express';
 
-import secret from '../config/secret';
 import { RequestWithUser } from '../types';
 
 export const authenticateToken = (req: RequestWithUser, res: Response, next: NextFunction) => {
@@ -13,7 +12,7 @@ export const authenticateToken = (req: RequestWithUser, res: Response, next: Nex
   }
 
   // TODO: сделать также
-  jwt.verify(token, secret, (err, user) => {
+  jwt.verify(token, process.env.BUDGETIM_SECRET, (err, user) => {
     if (err) {
       return res.sendStatus(403);
     }

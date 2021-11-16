@@ -6,14 +6,16 @@ import {
   AuthenticateRequest,
   RegisterRequest,
   ResetPasswordRequest,
-  UpdateCurrencyRequest, UpdatePasswordRequest,
+  UpdateCurrencyRequest,
+  UpdatePasswordRequest,
   VerifyRequest
 } from './types';
 import jwt from 'jsonwebtoken';
-import secret from '../../config/secret';
 import { sendEmail } from '../../models/emailTransporter';
 import bcrypt from 'bcrypt';
 import { RequestWithUser } from '../../types';
+
+const secret = process.env.BUDGETIM_SECRET;
 
 export const registerUser = async (req: RegisterRequest, res: Response) => {
   const { body } = req;

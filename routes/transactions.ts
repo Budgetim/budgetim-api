@@ -10,9 +10,10 @@ import {
 const router = Router();
 
 router.get('/', getTransactions);
-router.post('/add', addTransaction);
-router.post('/delete', deleteTransaction);
-router.post('/edit', editTransaction);
+router.post('/', addTransaction);
+router.put('/:id', editTransaction);
+router.delete('/:id', deleteTransaction);
+
 router.get('/availableMonths', getAvailableMonths);
 
 export default router;

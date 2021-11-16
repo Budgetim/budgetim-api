@@ -1,16 +1,19 @@
-import { Category, CategoryWithoutId, RequestWithUser } from '../../types';
+import { CategoryWithoutId, RequestWithUser } from '../../types';
 
 export interface AddCategoryRequest extends RequestWithUser {
   body: CategoryWithoutId;
 }
 
 export interface EditCategoryRequest extends RequestWithUser {
-  body: Category;
+  body: CategoryWithoutId;
+  params: {
+    id: string;
+  };
 }
 
 export interface DeleteCategoryRequest extends RequestWithUser {
-  body: {
-    id: Category['id'];
+  params: {
+    id: string;
   };
 }
 

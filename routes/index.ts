@@ -1,15 +1,15 @@
 import { Router } from 'express';
-import transactionRouter from './transaction';
-import categoryRouter from './category';
+import transactionsRouter from './transactions';
+import categoriesRouter from './categories';
 import usersRouter from './users';
-import currencyRouter from './currency';
+import currenciesRouter from './currencies';
 import { authenticateToken } from '../middlewares/authenticateToken';
 
 const router = Router();
 
-router.use('/transaction', authenticateToken, transactionRouter);
-router.use('/categories', authenticateToken, categoryRouter);
 router.use('/users', usersRouter);
-router.use('/currency', currencyRouter);
+router.use('/transactions', authenticateToken, transactionsRouter);
+router.use('/categories', authenticateToken, categoriesRouter);
+router.use('/currencies', currenciesRouter);
 
 export default router;

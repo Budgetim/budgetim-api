@@ -19,14 +19,20 @@ export const addTransaction = async (req: AddTransactionRequest, res: Response) 
 };
 
 export const deleteTransaction = async (req: DeleteTransactionRequest, res: Response) => {
-  const { body: { id }, userId } = req;
+  const { params: { id }, userId } = req;
   const transaction = await Transaction.delete(+id, userId);
   res.send(transaction);
 };
 
 export const editTransaction = async (req: EditTransactionRequest, res: Response) => {
-  const { body, userId } = req;
-  const transaction = await Transaction.edit({ ...body, userId });
+  const { body, userId, params: { id } } = req;
+  const transaction = await Transaction.edit({
+    ...{
+      ...body,
+      id: +id,
+    },
+    userId,
+  });
   res.send(transaction);
 };
 
