@@ -7,5 +7,6 @@ export const getCurrencies = async (req: Request, res: Response) => {
   //res.send(categories);
   res.send({
     secret: process.env.BUDGETIM_SECRET,
+    more: 2,
   })
 };
