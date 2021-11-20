@@ -68,4 +68,30 @@ export default class Category {
     ) as unknown as [CategorySummary[]];
     return result[0];
   }
+
+  static async getAllStatisticsByDays(month: number, year: number, userId: number) {
+    const result = await pool.query(`
+      SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
+      LEFT JOIN category ON transaction.category_id = category.id
+      WHERE transaction.client_id = ?
+      AND MONTH(transaction.date) = ?
+      AND YEAR(transaction.date) = ?
+      GROUP BY DATE(transaction.date), category.id;`,
+      [userId, month, year],
+    ) as unknown as [CategorySummary[]];
+    return result[0];
+  }
+
+  static async getCategoryStatisticsByDays(categoryId: number, userId: number) {
+    const result = await pool.query(`
+      SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
+      LEFT JOIN category ON transaction.category_id = category.id
+      WHERE transaction.client_id = ?
+      AND category.id = ?
+      GROUP BY DATE(transaction.date), category.id;`,
+      [userId, categoryId],
+    ) as unknown as [CategorySummary[]];
+    return result[0];
+  }
 }
+

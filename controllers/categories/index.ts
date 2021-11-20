@@ -4,4 +4,6 @@ export {
   deleteCategory,
   editCategory,
   showStatistic,
+  getAllStatisticsByDays,
+  getCategoryStatisticsByDays,
 } from './categories';

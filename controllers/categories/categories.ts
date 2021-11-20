@@ -2,7 +2,13 @@ import { Response } from 'express';
 
 import Category from '../../models/category';
 import { RequestWithUser } from '../../types';
-import { AddCategoryRequest, EditCategoryRequest, DeleteCategoryRequest, StatisticCategoryRequest } from './types';
+import {
+  AddCategoryRequest,
+  EditCategoryRequest,
+  DeleteCategoryRequest,
+  StatisticCategoryRequest,
+  GetAllStatisticsByDaysRequest, GetCategoryStatisticsByDaysRequest
+} from './types';
 
 export const getCategories = async (req: RequestWithUser, res: Response) => {
   const { userId } = req;
@@ -37,5 +43,17 @@ export const deleteCategory = async (req: DeleteCategoryRequest, res: Response) 
 export const showStatistic = async (req: StatisticCategoryRequest, res: Response) => {
   const { body, userId } = req;
   const result = await Category.showStatistic(body.month, body.year, userId);
+  res.send(result);
+};
+
+export const getAllStatisticsByDays = async (req: GetAllStatisticsByDaysRequest, res: Response) => {
+  const { body, userId } = req;
+  const result = await Category.getAllStatisticsByDays(body.month, body.year, userId);
+  res.send(result);
+};
+
+export const getCategoryStatisticsByDays = async (req: GetCategoryStatisticsByDaysRequest, res: Response) => {
+  const { body, userId } = req;
+  const result = await Category.getCategoryStatisticsByDays(body.categoryId, userId);
   res.send(result);
 };
