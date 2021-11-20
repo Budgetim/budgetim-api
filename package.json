@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.ts",
-    "start": "tsc && node dist/server.js",
+    "dev": "source ~/.bash_profile && nodemon server.ts",
+    "start": "source ~/.bash_profile && tsc && node dist/server.js",
     "lint": "eslint --ext .js,.ts routes controllers config middlewares models types server.ts"
   },
   "author": "Pavlenko Vitaly",
