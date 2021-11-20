@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "source ~/.bash_profile && nodemon server.ts",
-    "start": "source ~/.bash_profile && tsc && node dist/server.js",
+    "start": "tsc && node dist/server.js",
     "lint": "eslint --ext .js,.ts routes controllers config middlewares models types server.ts"
   },
   "author": "Pavlenko Vitaly",
