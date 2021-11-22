@@ -1,4 +1,8 @@
 import { ResultSetHeader } from 'mysql2';
+import eachDayOfInterval from 'date-fns/eachDayOfInterval';
+import subDays from 'date-fns/subDays';
+import format from 'date-fns/format';
+import isEqual from 'date-fns/isEqual';
 
 import { pool } from './db';
 import { Category as CategoryType, CategorySummary, CategoryWithoutId } from '../types';
@@ -69,17 +73,64 @@ export default class Category {
     return result[0];
   }
 
-  static async getAllStatisticsByDays(month: number, year: number, userId: number) {
+  static async getRange(userId: number) {
+    const result = await pool.query(`
+      SELECT MIN(transaction.date) as min, MAX(transaction.date) as max
+      FROM transaction
+      WHERE transaction.client_id = ?`,
+      [userId],
+    ) as unknown as [CategorySummary[]];
+
+    const range = result[0][0] as unknown as { min: string; max: string } | { min: null; max: null };
+    if (!range.min && !range.max) {
+      return null;
+    }
+    return range;
+  }
+
+  static async getAllStatisticsByDays(userId: number) {
+    const end = new Date();
+    end.setHours(0,0,0,0);
+    const start = subDays(end, 10);
+    const interval = eachDayOfInterval({ start, end });
+
     const result = await pool.query(`
       SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
       LEFT JOIN category ON transaction.category_id = category.id
       WHERE transaction.client_id = ?
-      AND MONTH(transaction.date) = ?
-      AND YEAR(transaction.date) = ?
-      GROUP BY DATE(transaction.date), category.id;`,
-      [userId, month, year],
-    ) as unknown as [CategorySummary[]];
-    return result[0];
+      AND transaction.date >= ?
+      GROUP BY DATE(transaction.date), category.id
+      ORDER BY DATE(transaction.date)`,
+      [userId, format(start, 'yyyy-MM-dd')],
+    ) as unknown as [(CategorySummary & { date: string })[]];
+
+    const data = result[0];
+
+
+    const groups: (CategoryType & { data: {sum: number; date: Date}[] })[] = [];
+    data?.forEach((item) => {
+      const foundedGroup = groups.find(group => group.id === item.id);
+      if (!foundedGroup) {
+        groups.push({
+          id: item.id,
+          description: item.description,
+          title: item.title,
+          color: item.color,
+          data: interval.map(date => ({ date, sum: 0 })),
+        });
+      }
+    });
+
+    data?.forEach((item) => {
+      const foundedGroup = groups.find(group => group.id === item.id);
+      const foundedDataItem = foundedGroup.data.find(dataItem => isEqual(dataItem.date, new Date(item.date)));
+      foundedDataItem.sum = +item.sum;
+    });
+
+    return groups.map(group => ({
+      ...group,
+      data: group.data.map(item => item.sum),
+    }));
   }
 
   static async getCategoryStatisticsByDays(categoryId: number, userId: number) {
@@ -88,7 +139,8 @@ export default class Category {
       LEFT JOIN category ON transaction.category_id = category.id
       WHERE transaction.client_id = ?
       AND category.id = ?
-      GROUP BY DATE(transaction.date), category.id;`,
+      GROUP BY DATE(transaction.date), category.id
+      ORDER BY DATE(transaction.date)`,
       [userId, categoryId],
     ) as unknown as [CategorySummary[]];
     return result[0];

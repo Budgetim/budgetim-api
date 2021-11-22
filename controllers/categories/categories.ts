@@ -7,7 +7,7 @@ import {
   EditCategoryRequest,
   DeleteCategoryRequest,
   StatisticCategoryRequest,
-  GetAllStatisticsByDaysRequest, GetCategoryStatisticsByDaysRequest
+  GetCategoryStatisticsByDaysRequest
 } from './types';
 
 export const getCategories = async (req: RequestWithUser, res: Response) => {
@@ -46,9 +46,9 @@ export const showStatistic = async (req: StatisticCategoryRequest, res: Response
   res.send(result);
 };
 
-export const getAllStatisticsByDays = async (req: GetAllStatisticsByDaysRequest, res: Response) => {
-  const { body, userId } = req;
-  const result = await Category.getAllStatisticsByDays(body.month, body.year, userId);
+export const getAllStatisticsByDays = async (req: RequestWithUser, res: Response) => {
+  const { userId } = req;
+  const result = await Category.getAllStatisticsByDays(userId);
   res.send(result);
 };
 

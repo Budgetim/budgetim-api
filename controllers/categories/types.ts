@@ -24,13 +24,6 @@ export interface StatisticCategoryRequest extends RequestWithUser {
   };
 }
 
-export interface GetAllStatisticsByDaysRequest extends RequestWithUser {
-  body: {
-    month: number;
-    year: number;
-  };
-}
-
 export interface GetCategoryStatisticsByDaysRequest extends RequestWithUser {
   body: {
     categoryId: number;
