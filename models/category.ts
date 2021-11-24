@@ -73,25 +73,10 @@ export default class Category {
     return result[0];
   }
 
-  static async getRange(userId: number) {
-    const result = await pool.query(`
-      SELECT MIN(transaction.date) as min, MAX(transaction.date) as max
-      FROM transaction
-      WHERE transaction.client_id = ?`,
-      [userId],
-    ) as unknown as [CategorySummary[]];
-
-    const range = result[0][0] as unknown as { min: string; max: string } | { min: null; max: null };
-    if (!range.min && !range.max) {
-      return null;
-    }
-    return range;
-  }
-
   static async getAllStatisticsByDays(userId: number) {
     const end = new Date();
     end.setHours(0,0,0,0);
-    const start = subDays(end, 10);
+    const start = subDays(end, 13);
     const interval = eachDayOfInterval({ start, end });
 
     const result = await pool.query(`
@@ -134,6 +119,31 @@ export default class Category {
   }
 
   static async getCategoryStatisticsByDays(categoryId: number, userId: number) {
+    const end = new Date();
+    end.setHours(0,0,0,0);
+
+    const range = await pool.query(`
+      SELECT MIN(transaction.date) as min
+      FROM transaction
+      WHERE transaction.client_id = ?`,
+      [userId],
+    ) as unknown as [[{ min: string }]];
+
+    const min = range[0][0].min;
+    const startDate = new Date(min);
+
+    const year = startDate.getFullYear();
+    const month = startDate.getMonth();
+    const day = startDate.getDate();
+    const start = new Date(Date.UTC(year, month, day))
+
+    const interval = eachDayOfInterval({ start, end }).map(item => {
+      const year = item.getFullYear();
+      const month = item.getMonth();
+      const day = item.getDate();
+      return new Date(Date.UTC(year, month, day))
+    });
+
     const result = await pool.query(`
       SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
       LEFT JOIN category ON transaction.category_id = category.id
@@ -142,8 +152,38 @@ export default class Category {
       GROUP BY DATE(transaction.date), category.id
       ORDER BY DATE(transaction.date)`,
       [userId, categoryId],
-    ) as unknown as [CategorySummary[]];
-    return result[0];
+    ) as unknown as [(CategorySummary & { date: string })[]];
+
+    const dataFromServer = result[0].map(item => {
+      const date = new Date(item.date);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const day = date.getDate();
+
+      return {
+        ...item,
+        date: new Date(Date.UTC(year, month, day)),
+      }
+    });
+
+    return {
+      title: dataFromServer[0]?.title,
+      description: dataFromServer[0]?.description,
+      data: interval.map(date => {
+        const foundedItem = dataFromServer.find(dataItem => isEqual(new Date(dataItem.date), date));
+
+        if (foundedItem) {
+          return {
+            value: +foundedItem.sum,
+            date,
+          }
+        }
+        return {
+          value: 0,
+          date,
+        };
+      }),
+    }
   }
 }
 
