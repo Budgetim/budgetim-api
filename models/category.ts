@@ -73,52 +73,7 @@ export default class Category {
     return result[0];
   }
 
-  static async getAllStatisticsByDays(userId: number) {
-    const end = new Date();
-    end.setHours(0,0,0,0);
-    const start = subDays(end, 13);
-    const interval = eachDayOfInterval({ start, end });
-
-    const result = await pool.query(`
-      SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
-      LEFT JOIN category ON transaction.category_id = category.id
-      WHERE transaction.client_id = ?
-      AND transaction.date >= ?
-      GROUP BY DATE(transaction.date), category.id
-      ORDER BY DATE(transaction.date)`,
-      [userId, format(start, 'yyyy-MM-dd')],
-    ) as unknown as [(CategorySummary & { date: string })[]];
-
-    const data = result[0];
-
-
-    const groups: (CategoryType & { data: {sum: number; date: Date}[] })[] = [];
-    data?.forEach((item) => {
-      const foundedGroup = groups.find(group => group.id === item.id);
-      if (!foundedGroup) {
-        groups.push({
-          id: item.id,
-          description: item.description,
-          title: item.title,
-          color: item.color,
-          data: interval.map(date => ({ date, sum: 0 })),
-        });
-      }
-    });
-
-    data?.forEach((item) => {
-      const foundedGroup = groups.find(group => group.id === item.id);
-      const foundedDataItem = foundedGroup.data.find(dataItem => isEqual(dataItem.date, new Date(item.date)));
-      foundedDataItem.sum = +item.sum;
-    });
-
-    return groups.map(group => ({
-      ...group,
-      data: group.data.map(item => item.sum),
-    }));
-  }
-
-  static async getCategoryStatisticsByDays(categoryId: number, userId: number) {
+  static async getInterval(userId: number) {
     const end = new Date();
     end.setHours(0,0,0,0);
 
@@ -143,6 +98,62 @@ export default class Category {
       const day = item.getDate();
       return new Date(Date.UTC(year, month, day))
     });
+
+    return interval;
+  }
+
+  static async getAllStatisticsByDays(userId: number) {
+    const interval = await this.getInterval(userId);
+
+    const result = await pool.query(`
+      SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
+      LEFT JOIN category ON transaction.category_id = category.id
+      WHERE transaction.client_id = ?
+      GROUP BY DATE(transaction.date), category.id
+      ORDER BY DATE(transaction.date)`,
+      [userId],
+    ) as unknown as [(CategorySummary & { date: string })[]];
+
+    const data = result[0].map(item => {
+      const date = new Date(item.date);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const day = date.getDate();
+
+      return {
+        ...item,
+        date: new Date(Date.UTC(year, month, day)),
+      }
+    });
+
+    const groups: (CategoryType & { data: {sum: number; date: Date}[] })[] = [];
+    data?.forEach((item) => {
+      const foundedGroup = groups.find(group => group.id === item.id);
+      if (!foundedGroup) {
+        groups.push({
+          id: item.id,
+          description: item.description,
+          title: item.title,
+          color: item.color,
+          data: interval.map(date => ({ date, sum: 0 })),
+        });
+      }
+    });
+
+    data?.forEach((item) => {
+      const foundedGroup = groups.find(group => group.id === item.id);
+      const foundedDataItem = foundedGroup.data.find(dataItem => isEqual(dataItem.date, new Date(item.date)));
+      foundedDataItem.sum = +item.sum;
+    });
+
+    return groups.map(group => ({
+      ...group,
+      data: group.data.map(item => item.sum).splice(-14),
+    }));
+  }
+
+  static async getCategoryStatisticsByDays(categoryId: number, userId: number) {
+    const interval = await this.getInterval(userId);
 
     const result = await pool.query(`
       SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
