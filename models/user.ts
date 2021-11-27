@@ -7,12 +7,11 @@ export const getUserDetails = (user?: UserType & CurrencyInfoForUser) => {
   if (!user) {
     return null;
   }
-  const { currencyId, currencyTitle, currencyUnit, ...other } = user;
+  const { currencyId, currencyUnit, ...other } = user;
   return {
     ...other,
     currency: {
       id: currencyId,
-      title: currencyTitle,
       unit: currencyUnit,
     },
   } as UserType;
@@ -58,7 +57,7 @@ export default class User {
 
   static async findByEmail({ email }: { email: string }) {
     const result = await pool.query(`
-      SELECT client.id, client.name, client.email, client.password, currency.id AS currencyId, currency.title AS currencyTitle, currency.unit AS currencyUnit
+      SELECT client.id, client.name, client.email, client.password, currency.id AS currencyId, currency.unit AS currencyUnit
       FROM client
       LEFT JOIN currency ON client.currency_id = currency.id
       WHERE client.email = ?`,
@@ -71,7 +70,7 @@ export default class User {
 
   static async findById({ id }: { id: number }) {
     const result = await pool.query(`
-      SELECT client.id, client.name, client.email, client.password, currency.id AS currencyId, currency.title AS currencyTitle, currency.unit AS currencyUnit
+      SELECT client.id, client.name, client.email, client.password, currency.id AS currencyId, currency.unit AS currencyUnit
       FROM client
       LEFT JOIN currency ON client.currency_id = currency.id
       WHERE client.id = ?`,
