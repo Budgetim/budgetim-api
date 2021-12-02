@@ -152,18 +152,25 @@ export default class Category {
     }));
   }
 
-  static async getCategoryStatisticsByDays(categoryId: number, userId: number) {
+  static async getCategoryStatisticsByDays(categoryId: number | null, userId: number) {
     const interval = await this.getInterval(userId);
 
-    const result = await pool.query(`
+    const query = categoryId ? `
       SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
       LEFT JOIN category ON transaction.category_id = category.id
       WHERE transaction.client_id = ?
       AND category.id = ?
       GROUP BY DATE(transaction.date), category.id
-      ORDER BY DATE(transaction.date)`,
-      [userId, categoryId],
-    ) as unknown as [(CategorySummary & { date: string })[]];
+      ORDER BY DATE(transaction.date)`
+      : `
+      SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
+      LEFT JOIN category ON transaction.category_id = category.id
+      WHERE transaction.client_id = ?
+      AND category.id IS NULL
+      GROUP BY DATE(transaction.date), category.id
+      ORDER BY DATE(transaction.date)`
+
+    const result = await pool.query(query, [userId, categoryId]) as unknown as [(CategorySummary & { date: string })[]];
 
     const dataFromServer = result[0].map(item => {
       const date = new Date(item.date);

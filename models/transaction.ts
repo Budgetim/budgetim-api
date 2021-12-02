@@ -20,8 +20,16 @@ const getTransaction = (transaction: TransactionType & CategoryInfoForTransactio
 }
 
 export default class Transaction {
-  static async get({ category, userId }: { userId: number; category?: string; }) {
-    const categoryTemplateQuery = category ? `AND transaction.category_id = ?` : '';
+  static async get({ category, userId }: { userId: number; category?: string | null; }) {
+
+    let categoryTemplateQuery = '';
+    if (category) {
+      categoryTemplateQuery = 'AND transaction.category_id = ?';
+    }
+    if (category === 'null' || category === null) {
+      categoryTemplateQuery = 'AND transaction.category_id IS NULL';
+    }
+
     const transactions = await pool.query(`
       SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date
       FROM transaction
@@ -34,8 +42,16 @@ export default class Transaction {
     return transactions[0].map(transaction => getTransaction(transaction));
   }
 
-  static async getByDate({ category, month, year, userId }: { userId: number; month: string; year: string; category?: string; }) {
-    const categoryTemplateQuery = category ? `AND transaction.category_id = ?` : '';
+  static async getByDate({ category, month, year, userId }: { userId: number; month: string; year: string; category?: string | null; }) {
+    let categoryTemplateQuery = '';
+    if (category) {
+      categoryTemplateQuery = 'AND transaction.category_id = ?';
+    }
+
+    if (category === 'null' || category === null) {
+      categoryTemplateQuery = 'AND transaction.category_id IS NULL';
+    }
+
     const transactions = await pool.query(`
       SELECT transaction.id, transaction.title, category.title AS categoryTitle, category.color AS categoryColor, transaction.category_id AS categoryId, transaction.price, transaction.date
       FROM transaction

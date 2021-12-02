@@ -4,7 +4,7 @@ export interface GetTransactionRequest extends RequestWithUser {
   query: {
     year: string;
     month: string;
-    category?: string;
+    category?: string | null;
   };
 }
 
