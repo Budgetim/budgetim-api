@@ -39,7 +39,7 @@ export const registerUser = async (req: RegisterRequest, res: Response) => {
   Welcome to BUDGETIM! To verify your email, click the following link:
   <br />
   <br />
-  http://api.budgetim.ru/users/verify/${user.id}/${token}`;
+  https://api.budgetim.ru/users/verify/${user.id}/${token}`;
   await sendEmail(user.email, 'Verify your email address', html);
 
   res.send(User.omitPassword(user));
