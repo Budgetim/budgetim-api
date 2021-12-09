@@ -90,7 +90,19 @@ export default class Category {
     const year = startDate.getFullYear();
     const month = startDate.getMonth();
     const day = startDate.getDate();
-    const start = new Date(Date.UTC(year, month, day))
+    const start = new Date(Date.UTC(year, month, day));
+
+    const yearEnd = end.getFullYear();
+    const monthEnd = end.getMonth();
+    const dayEnd = end.getDate();
+    const endUTC = new Date(Date.UTC(yearEnd, monthEnd, dayEnd));
+
+    if (isEqual(start, endUTC)) {
+      const year = start.getFullYear();
+      const month = start.getMonth();
+      const day = start.getDate();
+      return [new Date(Date.UTC(year, month, day))];
+    }
 
     const interval = eachDayOfInterval({ start, end }).map(item => {
       const year = item.getFullYear();
