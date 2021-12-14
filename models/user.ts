@@ -18,13 +18,13 @@ export const getUserDetails = (user?: UserType & CurrencyInfoForUser) => {
 }
 
 export default class User {
-  static async create({ name, email, password }: UserWithoutId) {
+  static async create({ name, email, password, currencyId = 2 }: UserWithoutId & { currencyId?: number }) {
     const hash = await bcrypt.hash(password, 10);
 
     await pool.query(`
-      INSERT INTO client (name, email, password)
-      VALUES (?, ?, ?)`,
-      [name, email, hash],
+      INSERT INTO client (name, email, currency_id, password)
+      VALUES (?, ?, ?, ?)`,
+      [name, email, currencyId, hash],
     );
 
     const user = await this.findByEmail({ email });

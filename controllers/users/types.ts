@@ -3,7 +3,7 @@ import { Request } from 'express';
 import { RequestWithUser, User, UserWithoutId } from '../../types';
 
 export interface RegisterRequest extends Request {
-  body: UserWithoutId;
+  body: UserWithoutId & { currencyId?: number };
 }
 
 export interface AuthenticateRequest extends Request {
