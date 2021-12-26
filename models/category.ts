@@ -1,7 +1,6 @@
 import { ResultSetHeader } from 'mysql2';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import subDays from 'date-fns/subDays';
-import format from 'date-fns/format';
 import isEqual from 'date-fns/isEqual';
 
 import { pool } from './db';
@@ -73,20 +72,7 @@ export default class Category {
     return result[0];
   }
 
-  static async getInterval(userId: number) {
-    const end = new Date();
-    end.setHours(0,0,0,0);
-
-    const range = await pool.query(`
-      SELECT MIN(transaction.date) as min
-      FROM transaction
-      WHERE transaction.client_id = ?`,
-      [userId],
-    ) as unknown as [[{ min: string }]];
-
-    const min = range[0][0].min;
-    const startDate = new Date(min);
-
+  static getInterval(startDate: Date, end: Date) {
     const year = startDate.getFullYear();
     const month = startDate.getMonth();
     const day = startDate.getDate();
@@ -115,7 +101,10 @@ export default class Category {
   }
 
   static async getAllStatisticsByDays(userId: number) {
-    const interval = await this.getInterval(userId);
+    const end = new Date();
+    end.setHours(0,0,0,0);
+    const start = subDays(end, 13);
+    const interval = this.getInterval(start, end);
 
     const result = await pool.query(`
       SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
@@ -155,17 +144,22 @@ export default class Category {
     data?.forEach((item) => {
       const foundedGroup = groups.find(group => group.id === item.id);
       const foundedDataItem = foundedGroup.data.find(dataItem => isEqual(dataItem.date, new Date(item.date)));
-      foundedDataItem.sum = +item.sum;
+      if (foundedDataItem) {
+        foundedDataItem.sum = +item.sum;
+      }
     });
 
     return groups.map(group => ({
       ...group,
-      data: group.data.map(item => item.sum).splice(-14),
+      data: group.data.map(item => item.sum),
     }));
   }
 
   static async getCategoryStatisticsByDays(categoryId: number | null, userId: number) {
-    const interval = await this.getInterval(userId);
+    const end = new Date();
+    end.setHours(0,0,0,0);
+    const start = subDays(end, 83);
+    const interval = this.getInterval(start, end);
 
     const query = categoryId ? `
       SELECT DATE(transaction.date) as date, SUM(transaction.price) as sum, category.id, category.color, category.title, category.description FROM transaction
