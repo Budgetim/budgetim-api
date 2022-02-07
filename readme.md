@@ -1,5 +1,3 @@
-# tracker-api
+# BUDGETIM (API)
 
-TODO:
-
-- Настроить eslint
+API на Node.js для приложения BUDGETIM
